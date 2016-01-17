@@ -3,6 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include <memory>
+#include <vector>
 #include <lms/imaging/image.h>
 #include <lms/module.h>
 
@@ -16,9 +17,17 @@ public:
 
     void clear();
     void setLogicalSize(int w, int h);
+    void render();
+
+    SDL_Renderer* getRenderer();
 private:
     SDL_Window *m_window;
     SDL_Renderer *m_renderer;
+};
+
+struct Layer {
+    lms::ReadDataChannel<lms::imaging::Image> image;
+    SDL_Texture* texture;
 };
 
 /**
@@ -31,7 +40,7 @@ public:
     bool cycle() override;
 private:
     std::unique_ptr<Window> m_window;
-    lms::ReadDataChannel<lms::imaging::Image> m_image;
+    std::vector<Layer> m_layers;
 };
 
 #endif // SDL_IMAGE_RENDERER_H

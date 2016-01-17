@@ -30,9 +30,23 @@ void Window::setLogicalSize(int w, int h) {
     SDL_RenderSetLogicalSize(m_renderer, w, h);
 }
 
+void Window::render() {
+    SDL_RenderPresent(m_renderer);
+}
+
+SDL_Renderer* Window::getRenderer() {
+    return m_renderer;
+}
+
 bool SdlImageRenderer::initialize() {
-    m_image = readChannel<lms::imaging::Image>("IMAGE");
-    m_window.reset(new Window("My Window", 640, 480));
+    m_window.reset(new Window(config().get<std::string>("title", getName()), 640, 480));
+
+    for(const std::string &channel : config().getArray<std::string>("channels")) {
+        Layer layer;
+        layer.image = readChannel<lms::imaging::Image>(channel);
+        layer.texture = nullptr;
+        m_layers.push_back(layer);
+    }
 
     return true;
 }
@@ -43,17 +57,38 @@ bool SdlImageRenderer::deinitialize() {
 }
 
 bool SdlImageRenderer::cycle() {
-    if(m_image->format() != lms::imaging::Format::BGRA) {
-        logger.error() << "Image has unexpected format " << m_image->format();
-        return false;
-    }
-
-    if(m_image->width() == 0 || m_image->height() == 0) {
-        logger.error() << "Image has zero dimension (" << m_image->width() << "," << m_image->height() << ")";
-        return false;
-    }
-
     m_window->clear();
+
+    for(Layer &layer : m_layers) {
+        if(layer.image->format() != lms::imaging::Format::BGRA) {
+            logger.error() << "Image has unexpected format " << layer.image->format();
+            continue;
+        }
+
+        if(layer.image->width() == 0 || layer.image->height() == 0) {
+            logger.error() << "Image has zero dimension (" << layer.image->width()
+                           << "," << layer.image->height() << ")";
+            continue;
+        }
+
+        if(layer.texture == nullptr) {
+            layer.texture = SDL_CreateTexture(m_window->getRenderer(), SDL_PIXELFORMAT_ARGB8888,
+                SDL_TEXTUREACCESS_STREAMING, layer.image->width(), layer.image->height());
+            SDL_SetTextureBlendMode(layer.texture, SDL_BLENDMODE_BLEND);
+        }
+
+        // write image to GPU
+        SDL_UpdateTexture(layer.texture, nullptr, layer.image->data(),
+            layer.image->width() * sizeof(uint32_t));
+
+        SDL_RenderCopy(m_window->getRenderer(), layer.texture, nullptr, nullptr);
+    }
+    m_window->render();
+
+    SDL_Event event;
+    while(SDL_PollEvent(&event)) {
+        // ignore
+    }
 
     return true;
 }
