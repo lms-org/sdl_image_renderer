@@ -13,6 +13,12 @@ Renders a single image into a window created with SDL2.
 - imaging
 - SDL2
 
+### Ubuntu
 ```
 sudo apt-get install libsdl2-2.0-0 libsdl2-dev
+```
+
+### OS X (Homebrew)
+```
+brew install sdl2
 ```
