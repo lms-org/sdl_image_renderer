@@ -9,14 +9,14 @@ order, the last image will be on top.
 ## Config
 - **title** - Window title, defaults to module name
 - **channels** - List of image channels to render
-- **key.down.<keycode>.command** - Messaging command to trigger when someone
+- **key.down.\<keycode\>.command** - Messaging command to trigger when someone
   presses a key
-- **key.up.<keycode>.content** - Messaging content to trigger when someone
+- **key.up.\<keycode\>.content** - Messaging content to trigger when someone
   releases a key
-- **key.down.<keycode>.repeat** - Set to false, if repeated keys should be
+- **key.down.\<keycode\>.repeat** - Set to false, if repeated keys should be
   ignored, otherwise they will be accepted. Defaults to true.
 
-```
+```xml
 <module>
     <name>sdl_image_renderer</name>
     <config>
