@@ -1,3 +1,4 @@
+#include <lms/imaging/converter.h>
 #include "sdl_image_renderer.h"
 #include "sdl_service/sdl_service.h"
 
@@ -66,9 +67,15 @@ bool SdlImageRenderer::cycle() {
     m_window->clear();
 
     for(Layer &layer : m_layers) {
-        if(layer.image->format() != lms::imaging::Format::BGRA) {
-            logger.error() << "Image has unexpected format " << layer.image->format();
-            continue;
+        switch(layer.image->format()) {
+            case lms::imaging::Format::BGRA:
+            case lms::imaging::Format::RGB:
+            case lms::imaging::Format::GREY:
+                // Supported
+                break;
+            default:
+                logger.error() << "Image has unexpected format " << layer.image->format();
+                continue;
         }
 
         if(layer.image->width() == 0 || layer.image->height() == 0) {
@@ -84,8 +91,16 @@ bool SdlImageRenderer::cycle() {
         }
 
         // write image to GPU
-        SDL_UpdateTexture(layer.texture, nullptr, layer.image->data(),
-            layer.image->width() * sizeof(uint32_t));
+        if(layer.image->format() == lms::imaging::Format::BGRA) {
+            SDL_UpdateTexture(layer.texture, nullptr, layer.image->data(),
+                              layer.image->width() * sizeof(uint32_t));
+        } else if(  layer.image->format() == lms::imaging::Format::GREY ||
+                    layer.image->format() == lms::imaging::Format::RGB ) {
+            lms::imaging::Image tmp;
+            lms::imaging::convert(*layer.image, tmp, lms::imaging::Format::BGRA);
+            SDL_UpdateTexture(layer.texture, nullptr, tmp.data(),
+                              layer.image->width() * sizeof(uint32_t));
+        }
 
         SDL_RenderCopy(m_window->getRenderer(), layer.texture, nullptr, nullptr);
     }
