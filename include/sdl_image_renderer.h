@@ -41,6 +41,8 @@ public:
 private:
     std::unique_ptr<Window> m_window;
     std::vector<Layer> m_layers;
+
+    void triggerKey(const std::string &type, SDL_Scancode code, bool repeat);
 };
 
 #endif // SDL_IMAGE_RENDERER_H

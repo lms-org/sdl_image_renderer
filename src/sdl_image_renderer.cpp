@@ -93,8 +93,34 @@ bool SdlImageRenderer::cycle() {
 
     SDL_Event event;
     while(SDL_PollEvent(&event)) {
-        // ignore
+        switch(event.type) {
+        case SDL_KEYDOWN:
+            triggerKey("down", event.key.keysym.scancode, event.key.repeat != 0);
+            break;
+        case SDL_KEYUP:
+            triggerKey("up", event.key.keysym.scancode, event.key.repeat != 0);
+            break;
+        }
     }
 
     return true;
+}
+
+void  SdlImageRenderer::triggerKey(std::string const& type, SDL_Scancode code, bool repeat) {
+    std::ostringstream oss;
+    oss << "key." << type << "." << code << ".";
+    std::string commandKey = oss.str() + "command";
+
+    if(repeat) {
+        std::string repeatKey = oss.str() + "repeat";
+        if(! config().get<bool>(repeatKey, true)) {
+            // ignore repeated keys
+            return;
+        }
+    }
+
+    if(config().hasKey(commandKey)) {
+        std::string contentKey = oss.str() + "content";
+        messaging()->send(config().get<std::string>(commandKey), config().get<std::string>(contentKey));
+    }
 }
