@@ -1,5 +1,7 @@
 # sdl_image_renderer
-Renders a single image into a window created with SDL2.
+Render images into a window created with SDL2. The images will be copied on
+top of each other with alpha blending. Rendering is performed in the given
+order, the last image will be on top.
 
 ## Data channels
 - All images provided by config `channels`

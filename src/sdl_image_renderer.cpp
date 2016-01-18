@@ -1,4 +1,5 @@
 #include "sdl_image_renderer.h"
+#include "sdl_service/sdl_service.h"
 
 Window::Window(std::string const& title, int w, int h) {
     m_window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, w, h,
@@ -39,6 +40,11 @@ SDL_Renderer* Window::getRenderer() {
 }
 
 bool SdlImageRenderer::initialize() {
+    if(! getService<sdl_service::SdlService>("sdl_service")) {
+        logger.error() << "sdl_image_renderer requires sdl_service to be enabled";
+        return false;
+    }
+
     m_window.reset(new Window(config().get<std::string>("title", getName()), 640, 480));
 
     for(const std::string &channel : config().getArray<std::string>("channels")) {
