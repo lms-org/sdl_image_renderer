@@ -74,12 +74,12 @@ bool SdlImageRenderer::cycle() {
                 // Supported
                 break;
             default:
-                logger.error() << "Image has unexpected format " << layer.image->format();
+                logger.error() << "Image has unexpected format " <<layer.image.name()<<" format: "<< layer.image->format();
                 continue;
         }
 
         if(layer.image->width() == 0 || layer.image->height() == 0) {
-            logger.error() << "Image has zero dimension (" << layer.image->width()
+            logger.error() << "Image "<<layer.image.name()<<" has zero dimension (" << layer.image->width()
                            << "," << layer.image->height() << ")";
             continue;
         }
