@@ -55,6 +55,11 @@ bool SdlImageRenderer::initialize() {
         m_layers.push_back(layer);
     }
 
+    m_hasOutput = config().get<bool>("output", false);
+    if(m_hasOutput) {
+        m_output = writeChannel<lms::imaging::Image>("OUTPUT_IMAGE");
+    }
+
     return true;
 }
 
@@ -105,6 +110,21 @@ bool SdlImageRenderer::cycle() {
         SDL_RenderCopy(m_window->getRenderer(), layer.texture, nullptr, nullptr);
     }
     m_window->render();
+
+    if(m_hasOutput) {
+        // Render output image
+        int w, h;
+        SDL_GetRendererOutputSize(m_window->getRenderer(), &w, &h);
+        m_output->resize(w, h, lms::imaging::Format::BGRA);
+        auto result = SDL_RenderReadPixels(m_window->getRenderer(),
+                                           NULL,
+                                           SDL_PIXELFORMAT_ARGB8888,
+                                           m_output->data(),
+                                           m_output->width() * lms::imaging::bytesPerPixel(m_output->format()));
+        if(result != 0) {
+            logger.error("output") << "Unable to render output image: " << SDL_GetError();
+        }
+    }
 
     SDL_Event event;
     while(SDL_PollEvent(&event)) {

@@ -41,6 +41,8 @@ public:
 private:
     std::unique_ptr<Window> m_window;
     std::vector<Layer> m_layers;
+    lms::WriteDataChannel<lms::imaging::Image> m_output;
+    bool m_hasOutput;
 
     void triggerKey(const std::string &type, SDL_Scancode code, bool repeat);
 };
