@@ -1,6 +1,7 @@
 #include <lms/imaging/converter.h>
 #include "sdl_image_renderer.h"
 #include "sdl_service/sdl_service.h"
+#include <lms/messaging.h>
 
 Window::Window(std::string const& title, int w, int h) {
     m_window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, w, h,
