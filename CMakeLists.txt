@@ -1,7 +1,9 @@
+if(USE_CONAN)
 cmake_minimum_required(VERSION 2.8.12)
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
+endif(USE_CONAN)
 
 set(SOURCES
     "src/sdl_image_renderer.cpp"
@@ -18,4 +20,8 @@ endif()
 
 include_directories(include)
 add_library(sdl_image_renderer MODULE ${SOURCES} ${HEADERS})
-target_link_libraries(sdl_image_renderer PRIVATE lmscore ${CONAN_LIBS})
+if(USE_CONAN)
+target_link_libraries(sdl_image_renderer PRIVATE ${CONAN_LIBS})
+else()
+target_link_libraries(sdl_image_renderer PRIVATE lmscore lms_imaging lms_sdl_service SDL2)
+endif(USE_CONAN)
