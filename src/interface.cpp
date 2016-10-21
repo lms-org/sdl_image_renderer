@@ -1,3 +1,5 @@
 #include "sdl_image_renderer.h"
 
-LMS_MODULE_INTERFACE(SdlImageRenderer)
+LMS_EXPORT_BEGIN
+LMS_EXPORT_MODULE(SdlImageRenderer)
+LMS_EXPORT_END
