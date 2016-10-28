@@ -20,4 +20,4 @@ endif()
 
 include_directories(include)
 add_library(sdl_image_renderer MODULE ${SOURCES} ${HEADERS})
-target_link_libraries(sdl_image_renderer PRIVATE lmscore lms_imaging lms_sdl_service SDL2 ${CONAN_LIBS}) #TODO used to sed sdl lib on mac
+target_link_libraries(sdl_image_renderer PRIVATE lmscore lms_imaging lms_sdl_service SDL2)
