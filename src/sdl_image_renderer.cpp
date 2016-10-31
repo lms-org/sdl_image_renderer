@@ -47,7 +47,7 @@ bool SdlImageRenderer::initialize() {
         return false;
     }
 
-    m_window.reset(new Window(config().get<std::string>("title", getName()), 640, 480));
+    m_window.reset(new Window(config().get<std::string>("title", getName()), config().get<int>("width",640),config().get<int>("height",480)));
 
     for(const std::string &channel : config().getArray<std::string>("channels")) {
         Layer layer;
