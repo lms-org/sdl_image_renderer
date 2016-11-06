@@ -11,6 +11,7 @@ class Window {
 public:
     Window(std::string const& title, int w, int h);
     ~Window();
+    lms::logging::Logger logger;
 
     Window(Window&) =delete;
 

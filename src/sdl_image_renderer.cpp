@@ -3,7 +3,7 @@
 #include "sdl_service/sdl_service.h"
 #include <lms/messaging.h>
 
-Window::Window(std::string const& title, int w, int h) {
+Window::Window(std::string const& title, int w, int h):logger("WINDOW_"+title) {
     m_window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, w, h,
                                 SDL_WINDOW_RESIZABLE);
 
@@ -11,11 +11,16 @@ Window::Window(std::string const& title, int w, int h) {
         throw std::runtime_error("SDL_CreateWindow returned NULL");
     }
 
-    m_renderer = SDL_CreateRenderer(m_window, -1, 0);
+    if(!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best")){
+        logger.error("SDL_HINT_RENDER_SCALE_QUALITY failed!");
+    }
+
+    m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED);
 
     if(m_renderer == nullptr) {
         throw std::runtime_error("SDL_CreateRenderer returned NULL");
     }
+    //setLogicalSize(w,h);
 }
 
 Window::~Window() {
@@ -29,7 +34,6 @@ void Window::clear() {
 }
 
 void Window::setLogicalSize(int w, int h) {
-    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
     SDL_RenderSetLogicalSize(m_renderer, w, h);
 }
 
@@ -60,7 +64,6 @@ bool SdlImageRenderer::initialize() {
     if(m_hasOutput) {
         m_output = writeChannel<lms::imaging::Image>("OUTPUT_IMAGE");
     }
-
     return true;
 }
 
